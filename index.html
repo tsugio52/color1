@@ -1,0 +1,358 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>色彩ラボ 第1回</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: projection-first lab bench (color series: neutral slate UI so the stimulus colors carry the meaning). Sticky header with one tab per demo; each demo = task area (left) + notes (right). */
+:root{
+  --bg:#f3f3f5; --panel:#ffffff; --ink:#1d2029; --muted:#5f6370; --line:#dcdde3;
+  --accent:#3d4f7c; --accent-ink:#ffffff; --ref:#b8741a; --soft:#e6e9f2; --soft2:#f7efe2;
+  --good:#2e7d4f; --bad:#b83a3a; --cell:#d3d5dd; --cell2:#a3a7b5;
+  --f-head:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --f-body:"Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15161a; --panel:#1e2027; --ink:#e7e8ee; --muted:#9a9eab; --line:#30333d;
+  --accent:#9fb2e3; --accent-ink:#141a2a; --ref:#e3a44c; --soft:#232a3d; --soft2:#33291b;
+  --good:#6cc493; --bad:#ef7d7d; --cell:#3a3d48; --cell2:#5f6372; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15161a; --panel:#1e2027; --ink:#e7e8ee; --muted:#9a9eab; --line:#30333d;
+  --accent:#9fb2e3; --accent-ink:#141a2a; --ref:#e3a44c; --soft:#232a3d; --soft2:#33291b;
+  --good:#6cc493; --bad:#ef7d7d; --cell:#3a3d48; --cell2:#5f6372; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.7}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.hrow{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;padding-block:14px 6px}
+h1{font-family:var(--f-head);font-weight:900;font-size:1.4rem;margin:0;letter-spacing:.02em}
+h1 small{font-family:var(--f-num);font-weight:600;font-size:.8rem;color:var(--accent);margin-right:8px;letter-spacing:.04em}
+.sub{color:var(--muted);font-size:.85rem}
+nav{display:flex;gap:4px;overflow-x:auto}
+nav button{font:inherit;font-size:.9rem;border:0;background:none;color:var(--muted);padding:8px 12px 10px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav button b{font-family:var(--f-num);font-weight:600;margin-right:6px;font-size:.8rem}
+nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{padding-block:22px 48px}
+section.tab{display:flex;flex-direction:column;gap:18px}
+.lead h2{font-family:var(--f-head);font-weight:900;font-size:1.55rem;margin:0 0 4px;text-wrap:balance}
+.lead p{margin:0;max-width:64em;color:var(--muted)}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;color:var(--accent);font-weight:700}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.panel h3{font-family:var(--f-head);font-size:.95rem;margin:0 0 8px;font-weight:700}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.btn.big{font-size:1.05rem;padding:12px 22px;font-weight:700}
+.btn[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:700}
+.btns{display:flex;flex-wrap:wrap;gap:6px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.tile .k{font-size:.76rem;color:var(--muted);line-height:1.4}
+.tile .v{font-family:var(--f-num);font-size:1.45rem;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.3}
+.tile .d{font-family:var(--f-num);font-size:.74rem;color:var(--muted)}
+.points{background:var(--soft);border-radius:10px;padding:14px 16px}
+.points h3{font-family:var(--f-head);font-size:.95rem;margin:0 0 4px}
+.points ul,.points ol{margin:0;padding-left:1.2em}
+.points p{margin:0 0 6px}
+.ref{background:var(--soft2);border-radius:10px;padding:14px 16px}
+.ref h3{font-family:var(--f-head);font-size:.95rem;margin:0 0 4px;color:var(--ref)}
+.ref p,.ref ul{margin:0 0 4px}
+.ref ul{padding-left:1.2em}
+.src{font-size:.75rem;color:var(--muted);line-height:1.6;margin:0}
+.note{font-size:.78rem;color:var(--muted)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;font-size:.82rem;width:100%}
+td,th{padding:5px 7px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:500}
+td.n,th.n{text-align:right;font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;text-align:center;position:relative}
+.stim{font-family:var(--f-head);font-weight:700;font-size:clamp(1.5rem,4.5vw,2.6rem);line-height:1.3;min-height:1.4em}
+.fix{font-family:var(--f-num);font-size:2rem;color:var(--muted)}
+.keys{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.keys .btn{min-width:150px}
+kbd{font-family:var(--f-num);font-size:.8rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--bg)}
+.prog{height:4px;background:var(--line);border-radius:2px;width:100%;max-width:420px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);width:0}
+.fb{font-size:.9rem;min-height:1.6em;font-weight:700}
+.fb.ok{color:var(--good)} .fb.ng{color:var(--bad)}
+svg.chart{width:100%;height:auto;display:block;font-family:var(--f-num);font-size:11px}
+svg.chart .ax{stroke:var(--muted);stroke-width:1}
+svg.chart .gr{stroke:var(--line);stroke-width:1}
+svg.chart text{fill:var(--muted)}
+svg.chart .lab{fill:var(--ink);font-family:var(--f-body);font-size:12px}
+.s-you{stroke:var(--accent);fill:var(--accent)}
+.s-ref{stroke:var(--ref);fill:var(--ref)}
+.s-alt{stroke:var(--ink);fill:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.8rem;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:middle;background:currentColor}
+.legend .you{color:var(--accent)} .legend .refc{color:var(--ref)} .legend .alt{color:var(--ink)}
+textarea,input[type=text],input[type=number],select{font:inherit;font-size:.9rem;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);padding:6px 8px;width:100%}
+textarea{min-height:120px;resize:vertical}
+input[type=range]{width:100%;accent-color:var(--accent)}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted)}
+.likert{display:flex;gap:6px;flex-wrap:wrap}
+.likert button{font:inherit;font-family:var(--f-num);width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.likert button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.steps{display:flex;gap:6px;flex-wrap:wrap;font-size:.78rem}
+.steps span{padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.steps span.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.steps span.done{color:var(--ink)}
+.chip{display:inline-block;font-size:.75rem;padding:1px 8px;border-radius:999px;background:var(--soft);color:var(--accent);font-weight:700}
+.chip.r{background:var(--soft2);color:var(--ref)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+
+.sw2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+@media (max-width:640px){.sw2{grid-template-columns:minmax(0,1fr)}}
+.swatch{aspect-ratio:1.6;border-radius:10px;border:1px solid var(--line);display:flex;align-items:flex-end;justify-content:space-between;padding:8px 10px;font-family:var(--f-num);font-size:.78rem;max-width:100%}
+.swatch span{background:rgba(255,255,255,.85);color:#1d2029;border-radius:4px;padding:1px 6px}
+.ctl{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.ctl output{font-family:var(--f-num);color:var(--ink);font-weight:600}
+.attr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.verdict{border-radius:8px;padding:10px 14px;font-weight:700}
+.verdict.bad{background:var(--soft2);color:var(--bad)}
+.verdict.ok{background:var(--soft);color:var(--good)}
+.dev{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.dev .tile{display:flex;flex-direction:column;gap:6px}
+.dev .chipc{aspect-ratio:1.4;border-radius:6px;border:1px solid var(--line)}
+.scenes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.scenes{grid-template-columns:minmax(0,1fr)}}
+.scene{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.scene svg{width:100%;height:auto;max-height:170px;background:var(--bg);border-radius:8px}
+.scene h4{margin:0;font-family:var(--f-head);font-size:.95rem}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:.82rem;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="hrow"><h1><small>COLOR 1</small>色彩ラボ 第1回</h1><span class="sub">歴史・理論・方法：Elliot &amp; Maier (2014) Annual Review of Psychology, 65, 95–120</span></div>
+    <nav role="tablist" aria-label="デモの切り替え">
+      <button role="tab" data-t="attr" aria-selected="true"><b>A</b>色の3属性と交絡</button>
+      <button role="tab" data-t="dev" aria-selected="false"><b>B</b>画面と見る角度</button>
+      <button role="tab" data-t="ctx" aria-selected="false"><b>C</b>文脈の中の色</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+
+<section class="tab" id="attr" role="tabpanel">
+  <div class="lead"><div class="eyebrow">デモ A ／ 体験2「この実験の問題点は？」の続き</div>
+    <h2>「赤」と「青」は、色相だけが違うのか</h2>
+    <p>実験で赤と青を比べるとき、色相（色の種類）以外の明度（明るさ）と彩度（鮮やかさ）もそろっていなければ、結果の原因がわかりません。下の2色を、色相・明度・彩度のスライダーで調整し、どこが違っているかを数値で確かめます。</p></div>
+  <div class="grid">
+    <div class="col">
+      <div class="panel">
+        <div class="btns" style="margin-bottom:10px"><button class="btn" id="aP1">ワープロソフトの「赤」と「青」</button><button class="btn" id="aP2">明度・彩度をそろえた赤と青</button><button class="btn" id="aP3">同じ赤で、明度だけ違う</button><button class="btn" id="aGray" aria-pressed="false">白黒にして見る</button></div>
+        <div class="sw2">
+          <div class="col"><div class="swatch" id="sw0"><span>条件1</span><span id="hx0"></span></div>
+            <div class="ctl"><label class="f">色相 h <output id="o0h"></output><input type="range" id="s0h" min="0" max="359" step="1"></label><label class="f">明度 L* <output id="o0L"></output><input type="range" id="s0L" min="5" max="95" step="1"></label><label class="f">彩度 C* <output id="o0C"></output><input type="range" id="s0C" min="0" max="135" step="1"></label></div></div>
+          <div class="col"><div class="swatch" id="sw1"><span>条件2</span><span id="hx1"></span></div>
+            <div class="ctl"><label class="f">色相 h <output id="o1h"></output><input type="range" id="s1h" min="0" max="359" step="1"></label><label class="f">明度 L* <output id="o1L"></output><input type="range" id="s1L" min="5" max="95" step="1"></label><label class="f">彩度 C* <output id="o1C"></output><input type="range" id="s1C" min="0" max="135" step="1"></label></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>2つの条件の違い</h3>
+        <div class="attr"><div class="tile"><div class="k">色相の差</div><div class="v" id="dH"></div><div class="d">度</div></div><div class="tile"><div class="k">明度の差</div><div class="v" id="dL"></div><div class="d">L*（0〜100）</div></div><div class="tile"><div class="k">彩度の差</div><div class="v" id="dC"></div><div class="d">C*</div></div></div>
+        <div class="verdict" id="aVerdict" style="margin-top:10px"></div>
+        <p class="note" id="aGamut" style="margin:6px 0 0"></p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="ref"><h3>総説のポイント（方法）</h3>
+        <ul><li>色には<b>色相・明度・彩度</b>の3つの属性があり、それぞれが心理的な効果をもちうる</li>
+          <li>調べたい属性以外はそろえる必要がある。20世紀の研究の多くはこれを統制せず、結果が一貫しなかった</li>
+          <li>統制の方法：①ソフトで指定、②色票、③<b>分光測色計</b>（著者たちの推奨）、④最小境界法</li></ul></div>
+      <div class="points"><h3>授業での使い方</h3>
+        <ol><li>「ワープロソフトの赤と青」を押し、明度と彩度の差を見せる</li><li>「白黒にして見る」で、明るさの違いを目で確かめる</li><li>「そろえた赤と青」で、色相だけが違う2色を見せる</li><li>どの属性の違いが成績に効いたのか、区別できるかを問う</li></ol>
+        <p class="note" style="margin-top:6px">L*・C*・h は CIELAB（D65）にもとづく計算値です。実際に画面に出る色は機器によって変わるため、厳密な刺激づくりには測色計が必要です（デモ B）。</p></div>
+      <p class="src">Elliot, A. J., &amp; Maier, M. A. (2014). Color psychology. Annual Review of Psychology, 65, 95–120（Methodological Considerations, p.100–101）。数値の計算と2色の設定は講師作成。</p>
+    </div>
+  </div>
+</section>
+
+<section class="tab" id="dev" role="tabpanel" hidden>
+  <div class="lead"><div class="eyebrow">デモ B ／ オンライン実験の落とし穴</div>
+    <h2>研究者が指定した「赤」は、参加者の画面でも同じ赤か</h2>
+    <p>同じ色の値を指定しても、画面の設定や見る角度によって、参加者が見る色は変わります。下は、よくある画面の違いを講師が模式的に再現したものです。指定した色からどれだけずれるか（色差 ΔE）を比べます。</p></div>
+  <div class="grid">
+    <div class="col">
+      <div class="panel">
+        <div class="row"><label class="f" style="flex:1 1 200px">研究者が指定した色<select id="dSel"><option value="red">赤（L* 48, C* 70, h 32）</option><option value="blue">青（L* 48, C* 50, h 270）</option><option value="green">緑（L* 48, C* 50, h 150）</option></select></label>
+          <label class="f" style="flex:1 1 240px">見る角度 <output id="oAng">0°（正面）</output><input type="range" id="sAng" min="0" max="60" step="5" value="0"></label></div>
+        <div class="dev" id="devs" style="margin-top:12px"></div>
+        <p class="note" style="margin:8px 0 0">ΔE が 2〜3 を超えると、並べればたいていの人が違いに気づくとされます（目安）。</p>
+      </div>
+      <div class="panel"><h3>オンラインで色を使うなら（著者たちの提案）</h3>
+        <div class="tiles"><div class="tile"><div class="k">選択肢 1</div><div class="v" style="font-size:1rem;font-family:var(--f-head)">1つの有彩色と、白（統制条件）を比べる</div><div class="d">それでも見る角度の問題は残る</div></div>
+          <div class="tile"><div class="k">選択肢 2</div><div class="v" style="font-size:1rem;font-family:var(--f-head)">色そのものではなく、色の名前を使う</div><div class="d">例：「赤」という単語</div></div></div></div>
+    </div>
+    <div class="col">
+      <div class="ref"><h3>総説の警告</h3>
+        <ul><li>色の表示は<b>機器に依存</b>する。オンライン実験（MTurk など）では、参加者ごとにモニタが違い、色を合わせることはできない</li>
+          <li>見る角度によっても色は大きく変わる。正面では赤でも、少し斜めから見ると色あせて、ピンクっぽく見えることもある</li></ul></div>
+      <div class="points"><h3>授業での使い方</h3>
+        <ol><li>受講生に、自分のノートPCやスマホを傾けて、この画面の色を見てもらう</li><li>下の「見る角度」スライダーで、正面と斜めの違いを模式的に見せる</li><li>「画面の色の効果を、オンラインで調べてよいか」を話し合う</li></ol>
+        <p class="note" style="margin-top:6px">各画面の変化は、色温度・ガンマ・彩度・角度による白っぽさを単純な式で再現した講師作成の模式で、特定の機種の測定値ではありません。</p></div>
+      <p class="src">Elliot &amp; Maier (2014), p.101（Mechanical Turk と見る角度についての記述）。</p>
+    </div>
+  </div>
+</section>
+
+<section class="tab" id="ctx" role="tabpanel" hidden>
+  <div class="lead"><div class="eyebrow">デモ C ／ 体験3「同じ赤、違う意味」</div>
+    <h2>同じ赤でも、場面によって近づきたくなるか、避けたくなるか</h2>
+    <p>4つの場面で、赤を見たときの気持ちを「近づきたい（接近）」「避けたい（回避）」「どちらでもない」から選びます。次に、同じ場面を灰色にしてもう一度答え、赤のときとの違いを比べます。最後に「文脈の中の色」理論の予測を表示します。</p></div>
+  <div class="grid">
+    <div class="col">
+      <div class="panel"><div class="row" style="justify-content:space-between"><div class="steps" id="cRound"></div><div class="btns"><button class="btn" id="cNext">次へ：灰色で答える</button><button class="btn primary" id="cShow">理論の予測を見る</button><button class="btn" id="cReset">やり直す</button></div></div></div>
+      <div class="scenes" id="scenes"></div>
+      <div class="panel"><h3>あなたの答えと理論の予測</h3><div class="tbl"><table id="cTable"></table></div></div>
+    </div>
+    <div class="col">
+      <div class="ref"><h3>「文脈の中の色」理論（Elliot &amp; Maier, 2012）</h3>
+        <ul><li>色の意味には、ヒト以外の霊長類と共通する<b>生物学的な基盤</b>と、くり返しの結びつきによる<b>学習</b>の両方がある</li>
+          <li>同じ色でも、文脈によって意味と反応が変わる。達成の文脈の赤＝失敗・危険（回避）、恋愛の文脈の赤＝性的な受容性・地位（接近）</li>
+          <li>文脈の手がかりがないときは、赤は危険を表すのが「初期設定」かもしれない</li></ul></div>
+      <div class="points"><h3>授業での使い方</h3><ol><li>各自で赤の4場面に答える</li><li>灰色で同じ4場面に答える</li><li>理論の予測を表示し、自分の答えと比べる</li><li>どの場面を第2回・第3回で詳しく扱うかを予告する</li></ol>
+        <p class="note" style="margin-top:6px">場面のイラストは講師作成です。画面の色での判断なので、厳密な実験ではありません（デモ B 参照）。</p></div>
+      <p class="src">Elliot &amp; Maier (2014)：Color-in-Context Theory（p.98–99）、Broad Conclusions。赤ペンの採点：Dukes &amp; Albanesi (2013)、赤い皿：Genschow et al. (2012)。</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<script>
+// ---- common ----
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const mean=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:NaN;
+const fmt=(x,d=0)=>Number.isFinite(x)?x.toFixed(d):'—';
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function linreg(pts){const n=pts.length;if(n<2)return null;const mx=mean(pts.map(p=>p[0])),my=mean(pts.map(p=>p[1]));let sxy=0,sxx=0;for(const[x,y]of pts){sxy+=(x-mx)*(y-my);sxx+=(x-mx)**2}if(!sxx)return null;const b=sxy/sxx;return{a:my-b*mx,b}}
+// chart(svg,{W,H,xd,yd,xt,yt,xl,yl,xfmt,series:[{pts,cls,line,dots,dash,r}]})
+function chart(svg,o){
+  const W=o.W||520,H=o.H||300,m={l:56,r:16,t:16,b:44};svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML='';
+  const X=v=>m.l+(v-o.xd[0])/(o.xd[1]-o.xd[0])*(W-m.l-m.r), Y=v=>H-m.b-(v-o.yd[0])/(o.yd[1]-o.yd[0])*(H-m.t-m.b);
+  for(const t of o.yt){el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),class:'gr'},svg);el('text',{x:m.l-6,y:Y(t)+4,'text-anchor':'end'},svg).textContent=(o.yfmt||String)(t)}
+  for(const t of o.xt){el('text',{x:X(t),y:H-m.b+16,'text-anchor':'middle'},svg).textContent=(o.xfmt||String)(t)}
+  el('line',{x1:m.l,x2:W-m.r,y1:H-m.b,y2:H-m.b,class:'ax'},svg);el('line',{x1:m.l,x2:m.l,y1:m.t,y2:H-m.b,class:'ax'},svg);
+  if(o.xl)el('text',{x:(m.l+W-m.r)/2,y:H-6,'text-anchor':'middle',class:'lab'},svg).textContent=o.xl;
+  if(o.yl){const t=el('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle',class:'lab',transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`},svg);t.textContent=o.yl}
+  for(const s of o.series){
+    const pts=s.pts.filter(p=>Number.isFinite(p[1]));
+    if(s.line&&pts.length>1){el('polyline',{points:pts.map(p=>X(p[0])+','+Y(p[1])).join(' '),class:s.cls,fill:'none','stroke-width':s.w||2.5,'stroke-dasharray':s.dash||'','stroke-opacity':s.sop||1,style:'fill:none'},svg)}
+    if(s.dots!==false)for(const p of pts){const c=el('circle',{cx:X(p[0]),cy:Y(p[1]),r:s.r||4,class:s.cls,'fill-opacity':s.op||1,style:'stroke:none'},svg)}
+    if(s.labels)for(const p of pts){el('text',{x:X(p[0])+7,y:Y(p[1])-6,class:s.cls,style:'stroke:none;font-size:11px'},svg).textContent=s.labels(p)}
+  }
+  return {X,Y};
+}
+function bars(svg,o){ // o:{W,H,cats,groups:[{name,cls,vals}],yd,yt,yl}
+  const W=o.W||520,H=o.H||280,m={l:56,r:16,t:16,b:44};svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML='';
+  const Y=v=>H-m.b-(v-o.yd[0])/(o.yd[1]-o.yd[0])*(H-m.t-m.b);const cw=(W-m.l-m.r)/o.cats.length,g=o.groups.length,bw=Math.min(46,cw*0.7/g);
+  for(const t of o.yt){el('line',{x1:m.l,x2:W-m.r,y1:Y(t),y2:Y(t),class:'gr'},svg);el('text',{x:m.l-6,y:Y(t)+4,'text-anchor':'end'},svg).textContent=(o.yfmt||String)(t)}
+  o.cats.forEach((c,i)=>{const cx=m.l+cw*(i+.5);el('text',{x:cx,y:H-m.b+16,'text-anchor':'middle',class:'lab'},svg).textContent=c;
+    o.groups.forEach((gr,j)=>{const v=gr.vals[i];if(!Number.isFinite(v))return;const x=cx-g*bw/2+j*bw+2;el('rect',{x,y:Y(Math.max(v,o.yd[0])),width:bw-4,height:Math.max(0,Y(o.yd[0])-Y(v)),class:gr.cls,style:'stroke:none'},svg);
+      el('text',{x:x+(bw-4)/2,y:Y(v)-4,'text-anchor':'middle',class:gr.cls,style:'stroke:none'},svg).textContent=(o.vfmt||(v=>fmt(v,0)))(v)})});
+  el('line',{x1:m.l,x2:W-m.r,y1:Y(o.yd[0]),y2:Y(o.yd[0]),class:'ax'},svg);
+  if(o.yl){const t=el('text',{x:14,y:(m.t+H-m.b)/2,'text-anchor':'middle',class:'lab',transform:`rotate(-90 14 ${(m.t+H-m.b)/2})`},svg);t.textContent=o.yl}
+}
+function copyText(btn,text){const done=()=>{const o=btn.textContent;btn.textContent='コピーしました';setTimeout(()=>btn.textContent=o,1500)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done,()=>fallback())}else fallback();
+  function fallback(){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done()}catch(e){}ta.remove()}}
+
+// ---- color utilities (sRGB D65 <-> CIELAB / LCh) ----
+const CU=(()=>{
+  const Xn=0.95047,Yn=1,Zn=1.08883;
+  const lin=c=>c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4), gam=c=>c<=0.0031308?12.92*c:1.055*Math.pow(c,1/2.4)-0.055;
+  function rgb2lab([r,g,b]){[r,g,b]=[r,g,b].map(v=>lin(v/255));const X=(0.4124*r+0.3576*g+0.1805*b)/Xn,Y=(0.2126*r+0.7152*g+0.0722*b)/Yn,Z=(0.0193*r+0.1192*g+0.9505*b)/Zn;
+    const f=t=>t>216/24389?Math.cbrt(t):(24389/27*t+16)/116;const fx=f(X),fy=f(Y),fz=f(Z);return[116*fy-16,500*(fx-fy),200*(fy-fz)]}
+  function lab2rgb([L,a,b]){const fy=(L+16)/116,fx=fy+a/500,fz=fy-b/200;const fi=t=>t**3>216/24389?t**3:(116*t-16)/(24389/27);
+    const X=fi(fx)*Xn,Y=fi(fy)*Yn,Z=fi(fz)*Zn;const r=3.2406*X-1.5372*Y-0.4986*Z,g=-0.9689*X+1.8758*Y+0.0415*Z,bb=0.0557*X-0.2040*Y+1.0570*Z;
+    const raw=[r,g,bb];const out=raw.some(v=>v<-0.002||v>1.002);return{rgb:raw.map(v=>Math.round(255*gam(Math.min(1,Math.max(0,v))))),out,lin:raw}}
+  const lch2lab=([L,C,h])=>[L,C*Math.cos(h*Math.PI/180),C*Math.sin(h*Math.PI/180)];
+  const lab2lch=([L,a,b])=>[L,Math.hypot(a,b),(Math.atan2(b,a)*180/Math.PI+360)%360];
+  const hex=rgb=>'#'+rgb.map(v=>v.toString(16).padStart(2,'0')).join('');
+  const fromHex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+  const dE=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1],p[2]-q[2]);
+  const linToRgb=l=>l.map(v=>Math.round(255*gam(Math.min(1,Math.max(0,v)))));
+  const rgbToLin=rgb=>rgb.map(v=>lin(v/255));
+  return{rgb2lab,lab2rgb,lch2lab,lab2lch,hex,fromHex,dE,linToRgb,rgbToLin,lch:(L,C,h)=>lab2rgb(lch2lab([L,C,h]))};
+})();
+// ================= A: attributes & confound =================
+let A={c:[[53,104,40],[32,133,306]],gray:false};
+const lchOf=hx=>CU.lab2lch(CU.rgb2lab(CU.fromHex(hx)));
+function aSet(c0,c1){A.c=[c0.slice(),c1.slice()];for(const i of[0,1]){$('#s'+i+'h').value=A.c[i][2];$('#s'+i+'L').value=A.c[i][0];$('#s'+i+'C').value=A.c[i][1]}aDraw()}
+function aDraw(){
+  let gm=[];
+  for(const i of[0,1]){const[L,C,h]=A.c[i];const r=CU.lch(L,C,h);const g=CU.lab2rgb([L,0,0]);const show=A.gray?g.rgb:r.rgb;
+    $('#sw'+i).style.background=CU.hex(show);$('#hx'+i).textContent=CU.hex(r.rgb).toUpperCase();
+    $('#o'+i+'h').textContent=Math.round(h)+'°';$('#o'+i+'L').textContent=Math.round(L);$('#o'+i+'C').textContent=Math.round(C);if(r.out)gm.push('条件'+(i+1))}
+  const[a,b]=A.c;let dh=Math.abs(a[2]-b[2]);dh=Math.min(dh,360-dh);const dl=Math.abs(a[0]-b[0]),dc=Math.abs(a[1]-b[1]);
+  $('#dH').textContent=Math.round(dh);$('#dL').textContent=Math.round(dl);$('#dC').textContent=Math.round(dc);
+  const other=[];if(dl>3)other.push('明度');if(dc>5)other.push('彩度');const v=$('#aVerdict');
+  if(dh>10&&other.length){v.className='verdict bad';v.textContent=`色相だけでなく、${other.join('と')}も違います。成績に差が出ても、原因が色相なのか${other.join('・')}なのか区別できません（交絡）。`}
+  else if(dh<=10&&other.length){v.className='verdict bad';v.textContent=`色相はほぼ同じで、${other.join('と')}だけが違います。「同じ赤」でも別の刺激です。`}
+  else if(dh>10){v.className='verdict ok';v.textContent='色相だけが違い、明度と彩度はそろっています。色相の効果を調べられる2色です。'}
+  else{v.className='verdict ok';v.textContent='2色はほぼ同じです。'}
+  $('#aGamut').textContent=gm.length?`${gm.join('と')}は、この画面（sRGB）で出せる範囲を超えているため、近い色で表示しています。`:'';
+}
+for(const i of[0,1])for(const k of['h','L','C'])$('#s'+i+k).addEventListener('input',e=>{A.c[i][{L:0,C:1,h:2}[k]]=+e.target.value;aDraw()});
+$('#aP1').onclick=()=>aSet(lchOf('#ff0000'),lchOf('#0000ff'));
+$('#aP2').onclick=()=>aSet([50,50,32],[50,50,275]);
+$('#aP3').onclick=()=>aSet([40,50,32],[65,50,32]);
+$('#aGray').onclick=()=>{A.gray=!A.gray;$('#aGray').setAttribute('aria-pressed',A.gray?'true':'false');aDraw()};
+aSet(lchOf('#ff0000'),lchOf('#0000ff'));
+
+// ================= B: devices & viewing angle =================
+const TARGETS={red:[48,70,32],blue:[48,50,270],green:[48,50,150]};
+const DEVS=[['調整済みのモニタ',l=>l],['色温度が高い（青み）',l=>[l[0]*.86,l[1]*.97,Math.min(1,l[2]*1.15+.02)]],['明るさ・コントラスト強め',l=>l.map(v=>Math.min(1,1.12*Math.pow(v,.8)))],
+  ['彩度の低い古い画面',l=>{const y=.2126*l[0]+.7152*l[1]+.0722*l[2];return l.map(v=>v*.62+y*.38)}],['夜間モード（暖色）',l=>[l[0],l[1]*.84,l[2]*.58]]];
+function devDraw(){const tgt=TARGETS[$('#dSel').value];const ref=CU.lch(...tgt);const refLab=CU.rgb2lab(ref.rgb);const lin0=CU.rgbToLin(ref.rgb);
+  const ang=+$('#sAng').value;$('#oAng').textContent=ang+'°'+(ang===0?'（正面）':'');const k=Math.pow(ang/60,1.4)*.55;
+  $('#devs').innerHTML=DEVS.map(([n,f])=>{let l=f(lin0.slice());l=l.map(v=>v*(1-k)+k*.78);const rgb=CU.linToRgb(l);const de=CU.dE(CU.rgb2lab(rgb),refLab);
+    return`<div class="tile"><div class="chipc" style="background:${CU.hex(rgb)}"></div><div class="k">${n}</div><div class="v" style="font-size:1.1rem">ΔE ${fmt(de,1)}</div></div>`}).join('')}
+$('#dSel').onchange=devDraw;$('#sAng').oninput=devDraw;devDraw();
+
+// ================= C: color in context =================
+const SC=[{n:'返ってきた答案に、たくさんの書きこみ',pred:'av',mean:'失敗・誤り',lec:'第2回'},{n:'デートの相手が着てきた服',pred:'ap',mean:'魅力・性的関心',lec:'第3回'},
+  {n:'試合の対戦相手のユニフォーム',pred:'av',mean:'優位性・脅威',lec:'第2回'},{n:'お菓子が盛られたお皿',pred:'av',mean:'止まれ・危険？（食べる量が減る）',lec:'第3回'}];
+const LBL={ap:'近づきたい',av:'避けたい',ne:'どちらでもない'};
+let CX={round:0,ans:{r:[],g:[]},shown:false};
+function sceneSvg(i,col){const ink='var(--ink)';
+  if(i===0)return`<svg viewBox="0 0 240 150"><rect x="60" y="10" width="120" height="132" rx="3" fill="var(--panel)" stroke="var(--cell2)"/>${[30,44,58,72,86,100,114].map(y=>`<line x1="72" x2="168" y1="${y}" y2="${y}" stroke="var(--cell2)" stroke-width="2"/>`).join('')}<path d="M150 24 l14 14 M164 24 l-14 14" stroke="${col}" stroke-width="4"/><path d="M80 52 q30 12 60 0" stroke="${col}" stroke-width="3" fill="none"/><path d="M150 80 l14 14 M164 80 l-14 14" stroke="${col}" stroke-width="4"/><text x="100" y="134" fill="${col}" font-size="18" font-weight="700" font-family="sans-serif">32点</text></svg>`;
+  if(i===1)return`<svg viewBox="0 0 240 150"><circle cx="120" cy="34" r="18" fill="var(--cell)" stroke="${ink}" stroke-width="1.5"/><path d="M96 58 q24 -8 48 0 l14 84 h-76 z" fill="${col}" stroke="${ink}" stroke-width="1.5"/><text x="168" y="64" fill="var(--muted)" font-size="12" font-family="sans-serif">待ち合わせ</text></svg>`;
+  if(i===2)return`<svg viewBox="0 0 240 150"><circle cx="70" cy="34" r="16" fill="var(--cell)" stroke="${ink}" stroke-width="1.5"/><rect x="50" y="54" width="40" height="56" rx="6" fill="var(--cell2)" stroke="${ink}" stroke-width="1.5"/><text x="112" y="88" fill="var(--muted)" font-size="18" font-weight="700" font-family="sans-serif">VS</text><circle cx="170" cy="34" r="16" fill="var(--cell)" stroke="${ink}" stroke-width="1.5"/><rect x="150" y="54" width="40" height="56" rx="6" fill="${col}" stroke="${ink}" stroke-width="1.5"/><text x="58" y="132" fill="var(--muted)" font-size="11" font-family="sans-serif">あなた</text><text x="160" y="132" fill="var(--muted)" font-size="11" font-family="sans-serif">相手</text></svg>`;
+  return`<svg viewBox="0 0 240 150"><ellipse cx="120" cy="92" rx="92" ry="40" fill="${col}" stroke="${ink}" stroke-width="1.5"/><ellipse cx="120" cy="88" rx="62" ry="24" fill="none" stroke="rgba(0,0,0,.18)"/>${[[100,82],[126,78],[140,92],[110,96],[124,90]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="10" fill="#c99a5b" stroke="#7a5a30"/>`).join('')}</svg>`}
+function cDraw(){const red=CU.hex(CU.lch(46,68,33).rgb),gray=CU.hex(CU.lch(46,0,0).rgb);const key=CX.round===0?'r':'g';const col=CX.round===0?red:gray;
+  $('#cRound').innerHTML=['1 赤で答える','2 灰色で答える','3 理論の予測'].map((t,i)=>`<span class="${i===CX.round?'on':i<CX.round?'done':''}">${t}</span>`).join('');
+  $('#scenes').innerHTML=SC.map((s,i)=>`<div class="scene"><h4>${i+1}. ${s.n}</h4>${sceneSvg(i,col)}<div class="seg">${['ap','av','ne'].map(v=>`<button data-i="${i}" data-v="${v}" aria-pressed="${CX.ans[key][i]===v}">${LBL[v]}</button>`).join('')}</div></div>`).join('');
+  $$('#scenes .seg button').forEach(b=>b.onclick=()=>{CX.ans[key][+b.dataset.i]=b.dataset.v;cDraw()});
+  $('#cNext').disabled=CX.round!==0||CX.ans.r.filter(Boolean).length<4;$('#cShow').disabled=CX.ans.r.filter(Boolean).length<4;
+  $('#cTable').innerHTML='<tr><th>場面</th><th>赤のとき</th><th>灰色のとき</th><th>理論の予測（赤）</th><th>赤の意味</th><th>扱う回</th></tr>'+SC.map((s,i)=>`<tr><td>${s.n}</td><td>${CX.ans.r[i]?LBL[CX.ans.r[i]]:'—'}</td><td>${CX.ans.g[i]?LBL[CX.ans.g[i]]:'—'}</td><td>${CX.shown?(s.pred==='ap'?'<span class="chip">接近</span>':'<span class="chip r">回避</span>'):'（あとで表示）'}</td><td>${CX.shown?s.mean:''}</td><td>${CX.shown?s.lec:''}</td></tr>`).join('')}
+$('#cNext').onclick=()=>{CX.round=1;cDraw()};$('#cShow').onclick=()=>{CX.shown=true;CX.round=2;cDraw()};$('#cReset').onclick=()=>{CX={round:0,ans:{r:[],g:[]},shown:false};cDraw()};
+cDraw();
+
+// tabs
+(function(){const tabs=$$('nav [role=tab]');const key='tab:'+document.title;
+  function show(t){tabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t?'true':'false'));$$('section.tab').forEach(s=>s.hidden=s.id!==t);store.set(key,t);if(window.onTab)window.onTab(t)}
+  tabs.forEach(b=>b.addEventListener('click',()=>{show(b.dataset.t);if(location.hash!=='#'+b.dataset.t)history.replaceState(null,'','#'+b.dataset.t)}));
+  const h=location.hash.slice(1);show(tabs.some(b=>b.dataset.t===h)?h:store.get(key,tabs[0].dataset.t));
+  window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(tabs.some(b=>b.dataset.t===h))show(h)})})();
+
+</script>
+
+</body></html>
